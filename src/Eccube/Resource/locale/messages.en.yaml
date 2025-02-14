@@ -25,6 +25,9 @@ common.next: Next
 common.first: First
 common.last: Last
 common.name: Name
+common.account_type: Account Type
+common.account_type_personal: Personal
+common.account_type_company: Company
 common.kana: Name (Phonetic)
 common.first_name: First Name
 common.last_name: Last Name
