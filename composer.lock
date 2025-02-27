@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2df5cde0ddc47e9b901fc2f30b21df44",
+    "content-hash": "c0e17782ea809228a69c5aac7e5d24bf",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -2318,6 +2318,30 @@
                 "source": "https://github.com/doctrine/sql-formatter/tree/1.1.3"
             },
             "time": "2022-05-23T21:33:49+00:00"
+        },
+        {
+            "name": "ec-cube/coupon42",
+            "version": "4.3.0",
+            "dist": {
+                "type": "tar",
+                "url": "https://package-api-c2.ec-cube.net/v43/ec-cube/coupon42/4.3.0/Coupon42-4.3.0.tgz"
+            },
+            "require": {
+                "ec-cube/plugin-installer": "^2.0"
+            },
+            "type": "eccube-plugin",
+            "extra": {
+                "code": "Coupon42",
+                "id": 2401
+            },
+            "description": "Coupon Plugin for EC-CUBE42",
+            "transport-options": {
+                "http": {
+                    "header": [
+                        "X-ECCUBE-KEY: "
+                    ]
+                }
+            }
         },
         {
             "name": "ec-cube/plugin-installer",
@@ -14663,7 +14687,7 @@
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "8.1.0"
+        "php": "8.2.12"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

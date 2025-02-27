@@ -18,8 +18,137 @@ file that was distributed with this source code.
 
 {% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
 
+{% block stylesheet %}
+    <link href="https://unpkg.com/filepond@4.30.4/dist/filepond.css" rel="stylesheet" />
+    <link href="https://unpkg.com/filepond-plugin-image-preview@4.6.11/dist/filepond-plugin-image-preview.min.css" rel="stylesheet" />
+    <style>
+        #upload-zone .filepond--root {
+            overflow: hidden;
+            max-width:200px;
+        }
+        #upload-zone .filepond--item {
+            max-height: 200px !important; 
+        }
+        #upload-zone .filepond--item .filepond--image-preview {
+            max-height: 200px !important;
+        }
+        #upload-zone .filepond--item img {
+            max-height: 200px !important; 
+        }
+    </style>
+{% endblock %}
+
 {% block javascript %}
     <script src="//yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-encode/dist/filepond-plugin-file-encode.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+    <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+    <script src="//yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
+
+    <script>
+        $(document).on('drop dragover', function(e) {
+            e.preventDefault();
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            FilePond.registerPlugin(
+                FilePondPluginFileEncode,
+                FilePondPluginFileValidateSize,
+                FilePondPluginImageExifOrientation,
+                FilePondPluginImagePreview
+            );
+
+            const inputFileElement = document.querySelector('input[name="admin_customer[avatar_file]"][type="file"]');
+            console.log('Input element found:', inputFileElement);
+
+            if (!inputFileElement) {
+                console.error('Input element not found!');
+                return;
+            }
+
+            const hiddenInput = document.getElementById('avatar_filename');
+            console.log('Hidden input found:', hiddenInput);
+
+            const pond = FilePond.create(inputFileElement, {
+                allowFileTypeValidation: true,
+                acceptedFileTypes: ['image/gif', 'image/png', 'image/jpeg'],
+                maxFileSize: '10MB',
+                maxFiles: 1,
+                allowBrowse: true,
+                allowDrop: true,
+                allowReorder: false,
+                labelIdle: '<i class="fa fa-cloud-upload fa-3x"></i> Kéo thả hoặc chọn ảnh đại diện',
+                styleItemPanelAspectRatio: 1,
+                server: {
+                    process: {
+                        url: '{{ path('admin_customer_image_process') }}',
+                        method: 'POST',
+                        headers: {
+                            'ECCUBE-CSRF-TOKEN': $('meta[name="eccube-csrf-token"]').attr('content'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        onload: (response) => {
+                            console.log('Upload successful, server response:', response);
+                            hiddenInput.value = response; 
+                            console.log('Hidden input value after upload:', hiddenInput.value);
+                            return response;
+                        },
+                        onerror: (error) => {
+                            console.error('Upload failed:', error);
+                        }
+                    },
+                    load: {
+                        url: '{{ path('admin_customer_image_load') }}?source=',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    },
+                    revert: {
+                        url: '{{ path('admin_customer_image_revert') }}',
+                        headers: {
+                            'ECCUBE-CSRF-TOKEN': $('meta[name="eccube-csrf-token"]').attr('content'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }
+                },
+                files: [
+                    {% if form.vars.value.avatar_filename %}
+                    {
+                        source: '{{ form.vars.value.avatar_filename }}',
+                        options: {
+                            type: 'local'
+                        }
+                    },
+                    {% endif %}
+                ]
+            });
+
+            pond.on('addfile', (error, file) => {
+                if (error) {
+                    console.error('Add file error:', error);
+                } else {
+                    console.log('File added:', file);
+                }
+            });
+
+            pond.on('processfile', (error, file) => {
+                if (error) {
+                    console.error('Process file error:', error);
+                } else {
+                    console.log('File processed successfully:', file.serverId);
+                }
+            });
+
+            pond.on('removefile', (error, file) => {
+                if (error) {
+                    console.error('Remove file error:', error);
+                } else {
+                    console.log('File removed:', file.serverId);
+                    hiddenInput.value = '';
+                    console.log('Hidden input value after remove:', hiddenInput.value);
+                }
+            });
+        });
+    </script>
 {% endblock javascript %}
 
 {% block main %}
@@ -60,6 +189,28 @@ file that was distributed with this source code.
                                         </div>
                                     </div>
                                 {% endif %}
+
+                                <div class="row mb-2">
+
+                                    <div class="col-3">
+                                        <span>{{ 'common.account_avatar'|trans }}</span>
+                                    </div>
+                                    <div class="col">
+                                    <div id="upload-zone" class="rounded">
+                                        {{ form_widget(form.avatar_file) }}
+                                        {{ form_errors(form.avatar_file) }}
+                                    </div>
+                                    <input type="hidden" name="admin_customer[avatar_filename]" id="avatar_filename" ">
+                                    <span class="invalid-feedback" id="product_image_error" style="display: none">
+                                        <span class="d-block">
+                                            <span class="form-error-icon badge bg-danger text-uppercase">{{ 'Error'|trans({}, 'validators') }}</span>
+                                            <span class="form-error-message"></span>
+                                        </span>
+                                    </span>
+
+                                    </div>
+                                </div>
+
                                 <div class="row mb-2">
                                     <div class="col-3">
                                         <span>{{ 'admin.common.name'|trans }}</span>
