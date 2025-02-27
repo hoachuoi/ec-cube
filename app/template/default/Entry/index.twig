@@ -1,5 +1,3 @@
-
-
 {#
 This file is part of EC-CUBE
 
@@ -16,8 +14,130 @@ file that was distributed with this source code.
 
 {% form_theme form 'Form/form_div_layout.twig' %}
 
+{% block stylesheet %}
+    <link href="https://unpkg.com/filepond@4.30.4/dist/filepond.css" rel="stylesheet" />
+    <link href="https://unpkg.com/filepond-plugin-image-preview@4.6.11/dist/filepond-plugin-image-preview.min.css" rel="stylesheet" />
+    <style>
+        #upload-zone .filepond--root {
+            overflow: hidden; `
+        }
+        #upload-zone .filepond--item {
+            max-height: 200px !important; 
+        }
+        #upload-zone .filepond--item .filepond--image-preview {
+            max-height: 200px !important;
+        }
+        #upload-zone .filepond--item img {
+            max-height: 200px !important; 
+        }
+    </style>
+{% endblock %}
+
 {% block javascript %}
     <script src="//yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-encode/dist/filepond-plugin-file-encode.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+    <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+
+    <script>
+        $(document).on('drop dragover', function(e) {
+            e.preventDefault();
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            FilePond.registerPlugin(
+                FilePondPluginFileEncode,
+                FilePondPluginFileValidateSize,
+                FilePondPluginImageExifOrientation,
+                FilePondPluginImagePreview
+            );
+
+            const inputFileElement = document.querySelector('input[name="entry[avatar_file]"][type="file"]');
+            console.log('Input element found:', inputFileElement);
+
+            if (!inputFileElement) {
+                console.error('Input element not found!');
+                return;
+            }
+
+            const hiddenInput = document.getElementById('avatar_filename');
+            console.log('Hidden input found:', hiddenInput);
+
+            const pond = FilePond.create(inputFileElement, {
+                allowFileTypeValidation: true,
+                acceptedFileTypes: ['image/gif', 'image/png', 'image/jpeg'],
+                maxFileSize: '10MB',
+                maxFiles: 1,
+                allowBrowse: true,
+                allowDrop: true,
+                allowReorder: false,
+                labelIdle: '<i class="fa fa-cloud-upload fa-3x"></i> Kéo thả hoặc chọn ảnh đại diện',
+                styleItemPanelAspectRatio: 1,
+                server: {
+                    process: {
+                        url: '{{ path('customer_image_process') }}',
+                        method: 'POST',
+                        headers: {
+                            'ECCUBE-CSRF-TOKEN': $('meta[name="eccube-csrf-token"]').attr('content'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        onload: (response) => {
+                            console.log('Upload successful, server response:', response);
+                            hiddenInput.value = response; 
+                            console.log('Hidden input value after upload:', hiddenInput.value);
+                            return response;
+                        },
+                        onerror: (error) => {
+                            console.error('Upload failed:', error);
+                        }
+                    },
+                    load: {
+                        url: '{{ path('customer_image_load') }}?source=',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    },
+                    revert: {
+                        url: '{{ path('customer_image_revert') }}',
+                        headers: {
+                            'ECCUBE-CSRF-TOKEN': $('meta[name="eccube-csrf-token"]').attr('content'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }
+                },
+                files: [
+                    {% if form.avatar_file.vars.value %}
+                    { source: '{{ form.avatar_file.vars.value }}', options: { type: 'local' } },
+                    {% endif %}
+                ]
+            });
+
+            pond.on('addfile', (error, file) => {
+                if (error) {
+                    console.error('Add file error:', error);
+                } else {
+                    console.log('File added:', file);
+                }
+            });
+
+            pond.on('processfile', (error, file) => {
+                if (error) {
+                    console.error('Process file error:', error);
+                } else {
+                    console.log('File processed successfully:', file.serverId);
+                }
+            });
+
+            pond.on('removefile', (error, file) => {
+                if (error) {
+                    console.error('Remove file error:', error);
+                } else {
+                    console.log('File removed:', file.serverId);
+                    hiddenInput.value = '';
+                    console.log('Hidden input value after remove:', hiddenInput.value);
+                }
+            });
+        });
+    </script>
 {% endblock javascript %}
 
 {% block main %}
@@ -27,22 +147,52 @@ file that was distributed with this source code.
         </div>
         <div class="ec-off1Grid">
             <div class="ec-off1Grid__cell">
-                <form method="post" action="{{ url('entry') }}" novalidate class="h-adr">
+                <form method="post" action="{{ url('entry') }}" novalidate enctype="multipart/form-data" class="h-adr">
                     <span class="p-country-name" style="display:none;">Japan</span>
                     {{ form_widget(form._token) }}
-                    <div class="ec-borderedDefs">
-                        <dl>
+                    <div >
+                        {# <dl >
                             <dt>
-                                {{ form_label(form.account_type, 'common.account_type', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                {{ form_label(form.avatar_file, 'common.account_avatar', { 'label_attr': { 'class': 'ec-label' }}) }}
+                            </dt>
+                           <dd >
+                                <div id="upload-zone" class="rounded">
+                                    {{ form_widget(form.avatar_file) }}
+                                    {{ form_errors(form.avatar_file) }}
+                                </div>
+                                <input type="hidden" name="entry[avatar_filename]" id="avatar_filename" value="{{ form.avatar_filename.vars.value }}">
+                                <span class="invalid-feedback" id="product_image_error" style="display: none">
+                                    <span class="d-block">
+                                        <span class="form-error-icon badge bg-danger text-uppercase">{{ 'Error'|trans({}, 'validators') }}</span>
+                                        <span class="form-error-message"></span>
+                                    </span>
+                                </span>
+                            </dd>
+                        </dl> #}
+                        <dl class="avatar-upload-dl">
+                            <dt>
+                                {{ form_label(form.avatar_file, 'common.account_avatar', { 'label_attr': { 'class': 'ec-label' }}) }}
                             </dt>
                             <dd>
-                                {{ form_widget(form.account_type) }}
+                                <div id="upload-zone" class="rounded">
+                                    {{ form_widget(form.avatar_file) }}
+                                    {{ form_errors(form.avatar_file) }}
+                                </div>
+                                <input type="hidden" name="entry[avatar_filename]" id="avatar_filename" value="{{ form.avatar_filename.vars.value }}">
+                                <span class="invalid-feedback" id="product_image_error" style="display: none">
+                                    <span class="d-block">
+                                        <span class="form-error-icon badge bg-danger text-uppercase">{{ 'Error'|trans({}, 'validators') }}</span>
+                                        <span class="form-error-message"></span>
+                                    </span>
+                                </span>
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.name, 'common.name', { 'label_attr': { 'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.account_type, 'common.account_type', { 'label_attr': { 'class': 'ec-label' }}) }}</dt>
+                            <dd>{{ form_widget(form.account_type) }}</dd>
+                        </dl>
+                        <dl>
+                            <dt>{{ form_label(form.name, 'common.name', { 'label_attr': { 'class': 'ec-label' }}) }}</dt>
                             <dd>
                                 <div class="ec-halfInput{{ has_errors(form.name.name01, form.name.name02) ? ' error'}}">
                                     {{ form_widget(form.name.name01, { 'attr': { 'placeholder': 'common.last_name' }}) }}
@@ -53,9 +203,7 @@ file that was distributed with this source code.
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.kana, 'common.kana', { 'label_attr': { 'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.kana, 'common.kana', { 'label_attr': { 'class': 'ec-label' }}) }}</dt>
                             <dd>
                                 <div class="ec-halfInput{{ has_errors(form.kana.kana01, form.kana.kana02) ? ' error'}}">
                                     {{ form_widget(form.kana.kana01, { 'attr': { 'placeholder': 'common.last_name_kana' }}) }}
@@ -66,9 +214,7 @@ file that was distributed with this source code.
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.company_name, 'common.company_name', { 'label_attr': { 'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.company_name, 'common.company_name', { 'label_attr': { 'class': 'ec-label' }}) }}</dt>
                             <dd>
                                 <div class="ec-halfInput{{ has_errors(form.company_name) ? ' error' }}">
                                     {{ form_widget(form.company_name) }}
@@ -77,119 +223,70 @@ file that was distributed with this source code.
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.address, 'common.address', { 'label_attr': { 'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.address, 'common.address', { 'label_attr': { 'class': 'ec-label' }}) }}</dt>
                             <dd>
                                 <div class="ec-zipInput{{ has_errors(form.postal_code) ? ' error' }}"><span>{{ 'common.postal_symbol'|trans }}</span>
                                     {{ form_widget(form.postal_code) }}
                                     <div class="ec-zipInputHelp">
                                         <div class="ec-zipInputHelp__icon">
-                                            <div class="ec-icon"><img
-                                                        src="{{ asset('assets/icon/question-white.svg') }}" alt="">
-                                            </div>
-                                        </div><a href="https://www.post.japanpost.jp/zipcode/" target="_blank"><span>{{ 'common.search_postal_code'|trans }}</span></a>
+                                            <div class="ec-icon"><img src="{{ asset('assets/icon/question-white.svg') }}" alt=""></div>
+                                        </div>
+                                        <a href="https://www.post.japanpost.jp/zipcode/" target="_blank"><span>{{ 'common.search_postal_code'|trans }}</span></a>
                                     </div>
                                     {{ form_errors(form.postal_code) }}
                                 </div>
-
-                                <div class="ec-select{{ has_errors(form.address.pref) ? ' error' }}">
-                                    {{ form_widget(form.address.pref) }}
-                                    {{ form_errors(form.address.pref) }}
-                                </div>
-                                <div class="ec-input{{ has_errors(form.address.addr01) ? ' error' }}">
-                                    {{ form_widget(form.address.addr01, { 'attr': { 'placeholder': 'common.address_sample_01' }}) }}
-                                    {{ form_errors(form.address.addr01) }}
-                                </div>
-                                <div class="ec-input{{ has_errors(form.address.addr02) ? ' error' }}">
-                                    {{ form_widget(form.address.addr02,  { 'attr': { 'placeholder': 'common.address_sample_02' }}) }}
-                                    {{ form_errors(form.address.addr02) }}
-                                </div>
+                                <div class="ec-select{{ has_errors(form.address.pref) ? ' error' }}">{{ form_widget(form.address.pref) }}{{ form_errors(form.address.pref) }}</div>
+                                <div class="ec-input{{ has_errors(form.address.addr01) ? ' error' }}">{{ form_widget(form.address.addr01, { 'attr': { 'placeholder': 'common.address_sample_01' }}) }}{{ form_errors(form.address.addr01) }}</div>
+                                <div class="ec-input{{ has_errors(form.address.addr02) ? ' error' }}">{{ form_widget(form.address.addr02, { 'attr': { 'placeholder': 'common.address_sample_02' }}) }}{{ form_errors(form.address.addr02) }}</div>
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.phone_number, 'common.phone_number', { 'label_attr': { 'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.phone_number, 'common.phone_number', { 'label_attr': { 'class': 'ec-label' }}) }}</dt>
                             <dd>
-                                <div class="ec-telInput{{ has_errors(form.phone_number) ? ' error' }}">
-                                    {{ form_widget(form.phone_number) }}
-                                    {{ form_errors(form.phone_number) }}
-                                </div>
+                                <div class="ec-telInput{{ has_errors(form.phone_number) ? ' error' }}">{{ form_widget(form.phone_number) }}{{ form_errors(form.phone_number) }}</div>
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.email, 'common.mail_address', { 'label_attr': { 'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.email, 'common.mail_address', { 'label_attr': { 'class': 'ec-label' }}) }}</dt>
                             <dd>
-                                <div class="ec-input{{ has_errors(form.email.first) ? ' error' }}">
-                                    {{ form_widget(form.email.first, { 'attr': { 'placeholder': 'common.mail_address_sample' }}) }}
-                                    {{ form_errors(form.email.first) }}
-                                </div>
-                                <div class="ec-input{{ has_errors(form.email.second) ? ' error' }}">
-                                    {{ form_widget(form.email.second, { 'attr': { 'placeholder': 'common.repeated_confirm' }}) }}
-                                    {{ form_errors(form.email.second) }}
-                                </div>
+                                <div class="ec-input{{ has_errors(form.email.first) ? ' error' }}">{{ form_widget(form.email.first, { 'attr': { 'placeholder': 'common.mail_address_sample' }}) }}{{ form_errors(form.email.first) }}</div>
+                                <div class="ec-input{{ has_errors(form.email.second) ? ' error' }}">{{ form_widget(form.email.second, { 'attr': { 'placeholder': 'common.repeated_confirm' }}) }}{{ form_errors(form.email.second) }}</div>
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.plain_password, 'common.password', { 'label_attr': {'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.plain_password, 'common.password', { 'label_attr': {'class': 'ec-label' }}) }}</dt>
                             <dd>
                                 <div class="ec-input{{ has_errors(form.plain_password.first) ? ' error' }}">
-                                    {{ form_widget(form.plain_password.first, {
-                                        'attr': { 'placeholder': 'common.password_sample'|trans({ '%min%': eccube_config.eccube_password_min_len, '%max%': eccube_config.eccube_password_max_len }) },
-                                        'type': 'password'
-                                    }) }}
+                                    {{ form_widget(form.plain_password.first, { 'attr': { 'placeholder': 'common.password_sample'|trans({ '%min%': eccube_config.eccube_password_min_len, '%max%': eccube_config.eccube_password_max_len }) }, 'type': 'password' }) }}
                                     {{ form_errors(form.plain_password.first) }}
                                 </div>
                                 <div class="ec-input{{ has_errors(form.plain_password.second) ? ' error' }}">
-                                    {{ form_widget(form.plain_password.second, {
-                                        'attr': { 'placeholder': 'common.repeated_confirm'|trans },
-                                        'type': 'password'
-                                    }) }}
+                                    {{ form_widget(form.plain_password.second, { 'attr': { 'placeholder': 'common.repeated_confirm'|trans }, 'type': 'password' }) }}
                                     {{ form_errors(form.plain_password.second) }}
                                 </div>
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.birth, 'common.birth_day', { 'label_attr': {'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.birth, 'common.birth_day', { 'label_attr': {'class': 'ec-label' }}) }}</dt>
                             <dd>
                                 <div class="ec-birth{{ has_errors(form.birth) ? ' error' }}">
-                                    {{ form_widget(form.birth.year) }}<span>/</span>
-                                    {{ form_widget(form.birth.month) }}<span>/</span>
-                                    {{ form_widget(form.birth.day) }}
+                                    {{ form_widget(form.birth.year) }}<span>/</span>{{ form_widget(form.birth.month) }}<span>/</span>{{ form_widget(form.birth.day) }}
                                     {{ form_errors(form.birth) }}
                                 </div>
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.sex, 'common.gender', { 'label_attr': { 'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.sex, 'common.gender', { 'label_attr': { 'class': 'ec-label' }}) }}</dt>
                             <dd>
-                                <div class="ec-radio{{ has_errors(form.sex) ? ' error' }}">
-                                    {{ form_widget(form.sex) }}
-                                    {{ form_errors(form.sex) }}
-                                </div>
+                                <div class="ec-radio{{ has_errors(form.sex) ? ' error' }}">{{ form_widget(form.sex) }}{{ form_errors(form.sex) }}</div>
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                {{ form_label(form.job, 'common.job', { 'label_attr': {'class': 'ec-label' }}) }}
-                            </dt>
+                            <dt>{{ form_label(form.job, 'common.job', { 'label_attr': {'class': 'ec-label' }}) }}</dt>
                             <dd>
-                                <div class="ec-select{{ has_errors(form.job) ? ' error' }}">
-                                    {{ form_widget(form.job) }}
-                                    {{ form_errors(form.job) }}
-                                </div>
+                                <div class="ec-select{{ has_errors(form.job) ? ' error' }}">{{ form_widget(form.job) }}{{ form_errors(form.job) }}</div>
                             </dd>
                         </dl>
-                        {# エンティティ拡張の自動出力 #}
                         {% for f in form|filter(f => f.vars.eccube_form_options.auto_render) %}
                             {% if f.vars.eccube_form_options.form_theme %}
                                 {% form_theme f f.vars.eccube_form_options.form_theme %}
@@ -197,7 +294,7 @@ file that was distributed with this source code.
                             {% else %}
                                 <dl>
                                     <dt>
-                                        {% set label_class =  f.vars.label_attr.class is defined ? f.vars.label_attr.class : '' %}
+                                        {% set label_class = f.vars.label_attr.class is defined ? f.vars.label_attr.class : '' %}
                                         {{ form_label(f, f.vars.label, { 'label_attr': {'class': label_class ~ ' ec-label' }}) }}
                                     </dt>
                                     <dd>
@@ -212,10 +309,7 @@ file that was distributed with this source code.
                     </div>
                     <div class="ec-registerRole__actions">
                         <div class="ec-checkbox{{ has_errors(form.user_policy_check) ? ' error' }}">
-                            <label>
-                                {{ form_widget(form.user_policy_check) }}
-                                {{ 'front.entry.agree_with_terms'|trans({ '%url%': url('help_agreement') })|raw }}
-                            </label>
+                            <label>{{ form_widget(form.user_policy_check) }}{{ 'front.entry.agree_with_terms'|trans({ '%url%': url('help_agreement') })|raw }}</label>
                             {{ form_errors(form.user_policy_check) }}
                         </div>
                         <div class="ec-off4Grid">

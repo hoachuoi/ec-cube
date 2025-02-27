@@ -17,6 +17,12 @@ trait CustomerTrait
      */
     private $account_type;
 
+     /**
+     * @var string|null
+     * @ORM\Column(name="avatar_filename", type="string", length=50, nullable=true)
+     */
+    private $avatar_filename;
+
     public function __construct()
     {
         $this->account_type = 'personal';
@@ -30,6 +36,15 @@ trait CustomerTrait
     public function setAccountType(?string $accountType): self
     {
         $this->account_type = $accountType;
+        return $this;
+    }
+    public function getAvatarFilename(): ?string
+    {
+        return $this->avatar_filename;
+    }
+    public function setAvatarFilename(?string $avatarFilename): self
+    {
+        $this->avatar_filename = $avatarFilename;
         return $this;
     }
 }

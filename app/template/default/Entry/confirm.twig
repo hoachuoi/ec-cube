@@ -25,13 +25,30 @@ file that was distributed with this source code.
                     {{ form_widget(form._token) }}
                     <p>{{ 'front.entry.confirm_message'|trans|nl2br }}</p>
                     <div class="ec-borderedDefs">
-                      <dl>
+                        <dl>
+                            <dt>
+                                {{ form_label(form.avatar_filename, 'common.account_avatar', { 'label_attr': { 'class': 'ec-label' }}) }}
+                            </dt>
+                            <dd>
+                                {% if form.avatar_filename.vars.value %}
+                                    <img src="{{ asset(form.avatar_filename.vars.value, 'temp_image') }}" alt="Avatar" style="max-width: 200px; max-height: 200px;">
+                                {% else %}
+                                    <p>{{ 'front.entry.no_avatar'|trans }}</p>
+                                {% endif %}
+                                {{ form_widget(form.avatar_filename, { 'type': 'hidden' }) }}
+                            </dd>
+                        </dl>
+                        <dl>
                             <dt>
                                 {{ form_label(form.account_type, 'common.account_type', { 'label_attr': { 'class': 'ec-label' }}) }}
                             </dt>
-                            <dd>
-                                {{ form_widget(form.account_type) }}
-                            </dd>
+                           <dd>
+                                {{ form.account_type.vars.data }}
+                                {{ form_widget(form.account_type, { type : 'hidden' }) }}
+                            
+                                {# {{ form_widget(form.account_type) }} #}
+                                {# {{ form.account_type.vars.choices|filter(choice => choice.value == form.account_type.vars.value)|first.label|trans }} #}
+                           </dd>
                         </dl>
                         <dl>
                             <dt>

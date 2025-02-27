@@ -28,6 +28,7 @@ common.name: お名前
 common.account_type: アカウント種別
 common.account_type_personal: 個人的
 common.account_type_company: 会社
+common.account_avatar: アバター
 common.kana: お名前(カナ)
 common.first_name: 名
 common.last_name: 姓
