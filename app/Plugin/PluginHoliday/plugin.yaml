@@ -1,0 +1,8 @@
+name: PluginHoliday
+code: PluginHoliday
+version: 1.0.0
+service:
+  - Plugin\PluginHoliday\ServiceProvider\PluginHolidayServiceProvider
+event:
+  - Plugin\PluginHoliday\Event
+orm.path: ~
