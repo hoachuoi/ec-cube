@@ -41,4 +41,33 @@ class HolidayRepository extends AbstractRepository
 
         return $Holiday;
     }
+
+    /**
+     * Tạo buider tìm kiếm 
+     */
+    public function getQueryBuilderBySearchData( array $searchData = [] )
+    {
+        $qb = $this->createQueryBuilder('h')
+        ->orderBy('h.id', 'ASC');
+
+        //search by name
+        if (!empty($searchData['name'])) {
+            $qb->andWhere('h.name LIKE :name')
+            ->setParameter('name', '%'.$searchData['name'].'%');
+        }
+
+        //search by message
+        if (!empty($searchData['holiday_message'])) {
+            $qb->andWhere('h.holiday_message LIKE :holiday_message')
+            ->setParameter('holiday_message', '%'.$searchData['holiday_message'].'%');
+        }
+
+        //search by date
+        if (!empty($searchData['holiday_date']) && $searchData['holiday_date'] instanceof \DateTime) {
+            $dateStr = $searchData['holiday_date']->format('m-d');
+            $qb->andWhere('h.holiday_date = :holiday_date')
+            ->setParameter('holiday_date', $dateStr);
+        }
+        return $qb;
+    }
 }

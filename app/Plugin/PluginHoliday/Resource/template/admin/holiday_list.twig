@@ -1,0 +1,136 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}Danh sách ngày lễ{% endblock %}
+{% block sub_title %}プラグイン一覧{% endblock %}
+
+{% form_theme searchForm '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}{% endblock stylesheet %}
+
+{% block javascript %}
+<script>
+    // Có thể thêm JS để xử lý giao diện nếu cần
+</script>
+{% endblock javascript %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+             <!-- Form tìm kiếm -->
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header"><span>{{ 'plugin_holiday.admin.search_holiday'|trans }}</span></div>
+                    <div class="card-body">
+                        <form method="post" action="{{ url('plugin_holiday_admin_list') }}">
+                            {{ form_widget(searchForm._token) }}
+                            
+                            <!-- Trường Name -->
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <span>{{ 'plugin_holiday.admin.name'|trans }}</span>
+                                    <span class="badge bg-primary ms-1">{{ 'admin.common.required'|trans }}</span>
+                                </div>
+                                <div class="col">
+                                    {{ form_widget(searchForm.name) }}
+                                    {{ form_errors(searchForm.name) }}
+                                </div>
+                            </div>
+
+                            <!-- Trường Holiday Message -->
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <span>{{ 'plugin_holiday.admin.message'|trans }}</span>
+                                    <span class="badge bg-primary ms-1">{{ 'admin.common.required'|trans }}</span>
+                                </div>
+                                <div class="col">
+                                    {{ form_widget(searchForm.holiday_message) }}
+                                    {{ form_errors(searchForm.holiday_message) }}
+                                </div>
+                            </div>
+
+                            <!-- Trường Holiday Date -->
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <span>{{ 'plugin_holiday.admin.date'|trans }}</span>
+                                    <span class="badge bg-primary ms-1">{{ 'admin.common.required'|trans }}</span>
+                                </div>
+                                <div class="col">
+                                    {{ form_widget(searchForm.holiday_date) }}
+                                    {{ form_errors(searchForm.holiday_date) }}
+                                </div>
+                            </div>
+
+                            <!-- Nút Tìm kiếm -->
+                            <div class="row">
+                                <div class="col text-end">
+                                    <button class="btn btn-ec-regular" type="submit">{{ 'admin.common.search'|trans }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Danh sách ngày lễ -->
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header d-flex gap-3">
+                            <span>Danh sách ngày lễ</span>
+                            <!-- Chọn số bản ghi -->
+                            <div class="row justify-content-md-center">
+                                <div class="col-md-auto">
+                                    <form method="get" action="{{ url('plugin_holiday_admin_list') }}">
+                                        <select name="page_count" class="form-control" onchange="this.form.submit()">
+                                            {% for pageMax in pageMaxis %}
+                                                <option value="{{ pageMax.name }}" {% if page_count == pageMax.name %}selected{% endif %}>
+                                                    {{ pageMax.name }} bản ghi
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên</th>
+                                    <th>Thông điệp</th>
+                                    <th>Ngày lễ</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% if pagination.totalItemCount > 0 %}
+                                {% for holiday in pagination %}
+                                    <tr>
+                                        <td>{{ holiday.id }}</td>
+                                        <td>{{ holiday.name }}</td>
+                                        <td>{{ holiday.HolidayMessage }}</td>
+                                        <td>{{ holiday.HolidayDate|date('Y-m-d') }}</td>
+                                        <td>
+                                            <a href="{{ url('plugin_holiday_admin_edit_holiday', {'id': holiday.id}) }}" class="btn btn-ec-regular">Sửa</a>
+                                            <a href="{{ url('plugin_holiday_admin_delete_holiday', {'id': holiday.id}) }}" class="btn btn-ec-regular btn-danger">Xóa</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+
+                        <!-- Phân trang -->
+                        <div class="row justify-content-md-center mb-4">
+                            {% if pagination|length > 0 %}
+                                {{ knp_pagination_render(pagination) }}
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

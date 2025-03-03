@@ -11,7 +11,13 @@
 
 {% block stylesheet %}{% endblock stylesheet %}
 
-{% block javascript %}{% endblock javascript %}
+{% block javascript %}
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+{% endblock javascript %}
 
 {% block main %}
     <form role="form" method="post">
@@ -28,7 +34,7 @@
                                 <div class="row">
                                 <div class="col-3">
                                     <span>ID</span>
-                                    <span class="badge bg-primary ml-1">必須</span>
+                                    <span class="badge bg-primary ml-1">{{ 'admin.common.required'| trans }}</span>
                                 </div>
                                 <div class="col mb-2">
                                     <p>{{ holiday.id }}</p>
@@ -38,8 +44,8 @@
                             <!-- Trường Name -->
                             <div class="row">
                                 <div class="col-3">
-                                    <span>名前</span>
-                                    <span class="badge bg-primary ml-1">必須</span>
+                                    <span>{{'plugin_holiday.admin.name'| trans}}</span>
+                                    <span class="badge bg-primary ml-1">{{ 'admin.common.required'| trans }}</span>
                                 </div>
                                 <div class="col mb-2">
                                     {{ form_widget(form.name) }}
@@ -50,8 +56,8 @@
                             <!-- Trường Holiday Message -->
                             <div class="row">
                                 <div class="col-3">
-                                    <span>祝日メッセージ</span>
-                                    <span class="badge bg-primary ml-1">必須</span>
+                                    <span>{{'plugin_holiday.admin.message'| trans}}</span>
+                                    <span class="badge bg-primary ml-1">{{ 'admin.common.required'| trans }}</span>
                                 </div>
                                 <div class="col mb-2">
                                     {{ form_widget(form.holiday_message) }}
@@ -62,8 +68,8 @@
                             <!-- Trường Holiday Date -->
                             <div class="row">
                                 <div class="col-3">
-                                    <span>祝日日付</span>
-                                    <span class="badge bg-primary ml-1">必須</span>
+                                    <span>{{'plugin_holiday.admin.date'| trans}}</span>
+                                    <span class="badge bg-primary ml-1">{{ 'admin.common.required'| trans }}</span>
                                 </div>
                                 <div class="col mb-2">
                                     {{ form_widget(form.holiday_date) }}
@@ -82,7 +88,7 @@
                 <div class="row justify-content-between align-items-center">
                     <div class="col-6">
                         <div class="c-conversionArea__leftBlockItem">
-                            <a class="c-baseLink" href="{{ url('admin_store_plugin') }}">
+                            <a class="c-baseLink" href="javascript:history.back()">
                                 <i class="fa fa-backward" aria-hidden="true"></i>
                                 <span>プラグイン一覧</span>
                             </a>

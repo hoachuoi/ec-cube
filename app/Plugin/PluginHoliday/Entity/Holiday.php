@@ -3,12 +3,13 @@
 namespace Plugin\PluginHoliday\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
-if (!class_exists('\Plugin\PluginHoliday\Entity\Holiday', false)) {
     /**
      * Config
      *
      * @ORM\Table(name="plg_plugin_holiday_data")
+     * @ORM\InheritanceType("SINGLE_TABLE")
+     * @ORM\HasLifecycleCallbacks()
+     * @ORM\DiscriminatorColumn(name="discriminator_type", type="string", length=255)
      * @ORM\Entity(repositoryClass="Plugin\PluginHoliday\Repository\HolidayRepository")
      */
     class Holiday
@@ -67,20 +68,39 @@ if (!class_exists('\Plugin\PluginHoliday\Entity\Holiday', false)) {
 
             return $this;
         }
+
+        /**
+         * @return string
+         */
         public function getHolidayMessage()
         {
             return $this->holiday_message;
         }
+
+        /**
+         * @param string $holiday_message
+         * @return Holiday
+         */
         public function setHolidayMessage($holiday_message)
         {
             $this->holiday_message = $holiday_message;
 
             return $this;
         }
+
+        /**
+         * @return string
+         */
         public function getHolidayDate()
         {
+            // dump($this->holiday_date);
             return $this->holiday_date;
         }
+
+        /**
+         * @param string $holiday_date
+         * @return $this
+         */
         public function setHolidayDate($holiday_date)
         {
             $this->holiday_date = $holiday_date;
@@ -88,4 +108,3 @@ if (!class_exists('\Plugin\PluginHoliday\Entity\Holiday', false)) {
             return $this;
         }
     }
-}
