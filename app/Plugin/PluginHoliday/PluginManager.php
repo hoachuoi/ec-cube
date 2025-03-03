@@ -12,7 +12,7 @@ use Plugin\PluginHoliday\Entity\Config;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class PluginManager extends AbstractPluginManager implements EventSubscriberInterface
+class PluginManager extends AbstractPluginManager
 {
     private $originalDir = __DIR__ . '/Resource/template/default/';
     private $template1 = 'holiday_message.twig';
@@ -91,33 +91,5 @@ class PluginManager extends AbstractPluginManager implements EventSubscriberInte
         }
     }
 
-    /**
-     * Định nghĩa các sự kiện mà plugin lắng nghe
-     */
-    public static function getSubscribedEvents()
-    {
-        return [
-            'eccube.event.app.nav' => 'onAppNav',
-        ];
-    }
-
-    /**
-     * Thêm mục menu vào sidebar admin
-     */
-    public function onAppNav($event)
-    {
-        $app = $event->getApplication(); // Lấy Application từ event
-        $container = $app->getContainer(); // Lấy Container từ Application
-
-        $nav = $event->getArgument('nav');
-
-        // Thêm mục menu dẫn đến trang config
-        $nav['plugin_holiday_config'] = [
-            'name' => 'plugin_holiday.admin.config',
-            'icon' => 'fa-cog',
-            'url' => $container->get('router')->generate('plugin_holiday_admin_config'), // Sử dụng container từ event
-        ];
-
-        $event->setArgument('nav', $nav);
-    }
+ 
 }

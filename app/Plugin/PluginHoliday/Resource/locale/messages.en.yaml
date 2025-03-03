@@ -4,3 +4,5 @@ plugin_holiday.admin.date: Holiday Date
 plugin_holiday.admin.require: Required
 plugin_holiday.admin.search_holiday: Search Holiday
 plugin_holiday.admin.config: Configuration
+plugin_holiday.admin.holiday_list: Holiday List
+plugin_holiday.admin.create: Create Holiday

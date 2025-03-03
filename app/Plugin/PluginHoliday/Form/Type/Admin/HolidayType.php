@@ -32,13 +32,15 @@ class HolidayType extends AbstractType
             ],
         ])
         ->add('holiday_date', DateType::class, [
-            'widget' => 'choice',           // Hiển thị dưới dạng dropdown
-            'months' => range(1, 12),       // Hiển thị tháng từ 1-12
-            'days' => range(1, 31),         // Hiển thị ngày từ 1-31
+            'widget' => 'choice',         
+            'months' => range(1, 12),      
+            'days' => range(1, 31),        
             'placeholder' => [
                 'day' => 'Day',
                 'month' => 'Month',
+                'year' => 'Year',
             ],
+            'data' => new \DateTime(),
             'constraints' => [
                 new NotBlank(),
             ],
