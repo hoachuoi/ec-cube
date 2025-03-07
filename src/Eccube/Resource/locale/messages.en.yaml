@@ -1300,6 +1300,7 @@ admin.setting.system.member.member_registration: User Setting
 admin.setting.system.member.name: Name
 admin.setting.system.member.department: Organization
 admin.setting.system.member.login_id: ID
+admin.setting.system.member.warehouse: Warehouse
 admin.setting.system.member.password: Password
 admin.setting.system.member.password_confirm: Re-enter Password
 admin.setting.system.member.work: Status
@@ -1670,6 +1671,7 @@ tooltip.product.product_id: The product ID is generated automatically.
 tooltip.product.sale_type: This will be used to specify sales types for different products such as physical products or digital products to download. The sales types can be edited at mtb_sale_type under [Master Data].
 tooltip.product.image: You can register multiple product images by drag & drop.
 tooltip.product.description_detail: These are product descriptions on each product page. HTML tags are accepted.
+tooltip.product.warehouse: This is the warehouse where the product is stored. You can manage the warehouse at [Master Data].
 tooltip.product.description_list: These are product descriptions on All Products page. If left empty, users will see no product descriptions there.
 tooltip.product.normal_price: If you have a special selling price, you can display regular price together.
 tooltip.product.search_word: These are keywords to be used for in-site search.

@@ -6,22 +6,21 @@ use Doctrine\ORM\Mapping as ORM;
 use Eccube\Annotation\EntityExtension;
 
 /**
- * Trait ProductTrait
- * @EntityExtension("Eccube\Entity\Product")
+ * Trait MemberTrait
+ * @EntityExtension("Eccube\Entity\Member")
  */
 
-trait ProductTrait
+trait MemberTrait
 {
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $is_warehouse;
+    public $is_warehouse;
 
     public function __construct()
     {
         $this->is_warehouse = false;
     }
-
     /**
      * @return bool|null
      */
@@ -32,10 +31,19 @@ trait ProductTrait
 
     /**
      * @param bool|null $isWarehouse
+     * @return $this
      */
     public function setIsWarehouse(?bool $isWarehouse): self
     {
         $this->is_warehouse = $isWarehouse;
         return $this;
+    }
+    public function getRoles(): array
+    {
+        if ($this->is_warehouse) {
+            return ['ROLE_WAREHOUSE'];
+        } else{
+            return ['ROLE_ADMIN'];
+        }
     }
 }
