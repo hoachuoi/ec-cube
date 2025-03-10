@@ -13,6 +13,7 @@ class ProductTypeExtension extends AbstractTypeExtension
         $builder->add('is_warehouse', ToggleSwitchType::class, [
             'label' => 'common.is_warehouse',
             'required' => false,
+            'data'=>true,
         ]);
     }
 

@@ -302,7 +302,11 @@ file that was distributed with this source code.
                                         </div>
                                     </div>
                                     <div class="col mb-2">
+                                    {% if is_warehouse %}
+                                        {{ form_widget(form.name, { 'attr': {'readonly': 'readonly'} }) }}
+                                    {% else %}
                                         {{ form_widget(form.name) }}
+                                    {% endif %}
                                         {{ form_errors(form.name) }}
                                     </div>
                                 </div>
@@ -318,7 +322,12 @@ file that was distributed with this source code.
                                             </div>
                                         </div>
                                         <div class="col mb-2">
+                                        {% if is_warehouse %}
+                                        {{ form.class.sale_type.vars.data }}
+                                        {{ form_widget(form.class.sale_type, { type : 'hidden' }) }}
+                                        {% else %}
                                             {{ form_widget(form.class.sale_type) }}
+                                        {% endif %}
                                             {{ form_errors(form.class.sale_type) }}
                                         </div>
                                     </div>
@@ -334,7 +343,7 @@ file that was distributed with this source code.
                                     <div class="col mb-2">
                                         <p id="message"></p>
                                         <div id="upload-zone" class="rounded">
-                                            {{ form_widget(form.product_image, { attr : { style : 'display:none;' } }) }}
+                                            {{ form_widget(form.product_image, { attr : { style : 'display:none;' } ,'disabled': 'disabled'}) }}
                                             {{ form_errors(form.product_image) }}
                                         </div><!-- /#upload-zone -->
                                         <span class="invalid-feedback" id="product_image_error" style="display: none">
@@ -355,8 +364,10 @@ file that was distributed with this source code.
                                         </div>
                                     </div>
                                     <div class="col">
-                                        {{ form_widget(form.is_warehouse) }}
-                                        {{ form_errors(form.is_warehouse) }}
+                                        {% if not is_warehouse %}
+                                            {{ form_widget(form.is_warehouse) }}
+                                            {{ form_errors(form.is_warehouse) }}
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="row">
@@ -368,7 +379,11 @@ file that was distributed with this source code.
                                         </div>
                                     </div>
                                     <div class="col">
+                                    {% if is_warehouse %}
+                                        {{ form_widget(form.description_detail, { attr : { rows : "8"}, 'disabled':'disabled' }) }}
+                                    {% else %}
                                         {{ form_widget(form.description_detail, { attr : { rows : "8"} }) }}
+                                    {% endif %}
                                         {{ form_errors(form.description_detail) }}
                                         <div class="d-inline-block mb-2" data-bs-toggle="collapse" href="#addComment"
                                              role="button" aria-expanded="false" aria-controls="addComment">
@@ -392,7 +407,11 @@ file that was distributed with this source code.
                                         </div>
                                         <div class="col mb-4">
                                             <div>
+                                            {% if is_warehouse %}
+                                                {{ form_widget(form.description_list, { attr : { rows : "4"}, 'disabled': 'disabled' }) }}
+                                            {% else %}
                                                 {{ form_widget(form.description_list, { attr : { rows : "4"} }) }}
+                                            {% endif %}
                                                 {{ form_errors(form.description_list) }}
                                             </div>
                                         </div>
@@ -410,7 +429,11 @@ file that was distributed with this source code.
                                         </div>
                                         <div class="col mb-2">
                                             <div>
-                                                {{ form_widget(form.class.price02) }}
+                                                {% if is_warehouse %}
+                                                    {{ form_widget(form.class.price02, { 'attr': {'readonly': 'readonly'} }) }}
+                                                {% else %}
+                                                    {{ form_widget(form.class.price02) }}
+                                                {% endif %}
                                                 {{ form_errors(form.class.price02) }}
                                             </div>
                                         </div>
@@ -425,7 +448,11 @@ file that was distributed with this source code.
                                         </div>
                                         <div class="col mb-2">
                                             <div>
-                                                {{ form_widget(form.class.price01) }}
+                                                {% if is_warehouse %}
+                                                    {{ form_widget(form.class.price01,{ 'attr': {'readonly': 'readonly'}}) }}
+                                                {% else %}
+                                                    {{ form_widget(form.class.price01) }}
+                                                {% endif %}
                                                 {{ form_errors(form.class.price01) }}
                                             </div>
                                         </div>
@@ -471,7 +498,11 @@ file that was distributed with this source code.
                                     </div>
                                     <div class="col mb-2">
                                         <div>
+                                        {% if is_warehouse %}
+                                            {{ form_widget(form.search_word, {'attr': {'readonly': 'readonly'}}) }}
+                                        {% else %}
                                             {{ form_widget(form.search_word) }}
+                                        {% endif %}
                                             {{ form_errors(form.search_word) }}
                                         </div>
                                     </div>
@@ -488,7 +519,11 @@ file that was distributed with this source code.
                                         </div>
                                         <div class="col mb-2">
                                             <div>
+                                            {% if is_warehouse %}
+                                                {{ form_widget(form.class.code, {'attr': {'readonly': 'readonly'}}) }}
+                                            {% else %}
                                                 {{ form_widget(form.class.code) }}
+                                            {% endif %}
                                                 {{ form_errors(form.class.code) }}
                                             </div>
                                         </div>
@@ -503,58 +538,64 @@ file that was distributed with this source code.
                                         </div>
                                         <div class="col mb-2">
                                             <div>
+                                            {% if is_warehouse %}
+                                                {{ form_widget(form.class.sale_limit, {'attr': {'readonly': 'readonly'}}) }}
+                                            {% else %}
                                                 {{ form_widget(form.class.sale_limit) }}
+                                            {% endif %}
                                                 {{ form_errors(form.class.sale_limit) }}
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                 title="{{ 'tooltip.product.delivery_duration'|trans }}">
-                                                <span>{{ 'admin.product.delivery_duration'|trans }}</span>
-                                                <i class="fa fa-question-circle fa-lg ms-1"></i>
-                                            </div>
-                                        </div>
-                                        <div class="col mb-2">
-                                            <div>
-                                                {{ form_widget(form.class.delivery_duration) }}
-                                                {{ form_errors(form.class.delivery_duration) }}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {% if BaseInfo.option_product_delivery_fee %}
+                                    {% if not is_warehouse %}
                                         <div class="row">
                                             <div class="col-3">
-                                                <div class="d-inline-block">
-                                                    <span>{{ 'admin.product.delivery_fee'|trans }}</span>
+                                                <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="{{ 'tooltip.product.delivery_duration'|trans }}">
+                                                    <span>{{ 'admin.product.delivery_duration'|trans }}</span>
+                                                    <i class="fa fa-question-circle fa-lg ms-1"></i>
                                                 </div>
                                             </div>
                                             <div class="col mb-2">
                                                 <div>
-                                                    {{ form_widget(form.class.delivery_fee) }}
-                                                    {{ form_errors(form.class.delivery_fee) }}
+                                                    {{ form_widget(form.class.delivery_duration) }}
+                                                    {{ form_errors(form.class.delivery_duration) }}
                                                 </div>
                                             </div>
                                         </div>
                                     {% endif %}
-                                    {% if BaseInfo.option_product_tax_rule %}
-                                        <div class="row">
-                                            <div class="col-3">
-                                                <div class="d-inline-block">
-                                                    <span>{{ 'admin.product.tax_rate'|trans }}</span>
+                                    {% if not is_warehouse %}
+                                        {% if BaseInfo.option_product_delivery_fee %}
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <div class="d-inline-block">
+                                                        <span>{{ 'admin.product.delivery_fee'|trans }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col mb-2">
+                                                    <div>
+                                                        {{ form_widget(form.class.delivery_fee) }}
+                                                        {{ form_errors(form.class.delivery_fee) }}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col mb-2">
-                                                <div>
-                                                    {{ form_widget(form.class.tax_rate) }}
-                                                    {{ form_errors(form.class.tax_rate) }}
+                                        {% endif %}
+                                        {% if BaseInfo.option_product_tax_rule %}
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <div class="d-inline-block">
+                                                        <span>{{ 'admin.product.tax_rate'|trans }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col mb-2">
+                                                    <div>
+                                                        {{ form_widget(form.class.tax_rate) }}
+                                                        {{ form_errors(form.class.tax_rate) }}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
                                     {% endif %}
-                                {% endif %}
 
                                 {# エンティティ拡張の自動出力 #}
                                 {% for f in form|filter(f => f.vars.eccube_form_options.auto_render) %}
@@ -596,11 +637,11 @@ file that was distributed with this source code.
                                         {% endif %}
                                     {% endfor %}
                                 {% endif %}
-
+                                {% endif %}
                             </div>
                         </div>
                     </div>
-                    {% if id is not null %}
+                    {% if id is not null and not is_warehouse  %}
                         <div class="card rounded border-0 mb-4">
                             <div class="card-header">
                                 <div class="row">
@@ -658,41 +699,43 @@ file that was distributed with this source code.
                             </div>
                         </div>
                     {% endif %}
-                    <div class="card rounded border-0 mb-4">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-8">
-                                    <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
-                                         title="{{ 'tooltip.product.free_area'|trans }}">
-                                        <span class="card-title">{{ 'admin.product.free_area__card_title'|trans }}</span>
-                                        <i class="fa fa-question-circle fa-lg ms-1"></i>
+                    {% if not is_warehouse %}
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="{{ 'tooltip.product.free_area'|trans }}">
+                                            <span class="card-title">{{ 'admin.product.free_area__card_title'|trans }}</span>
+                                            <i class="fa fa-question-circle fa-lg ms-1"></i>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-4 text-end">
-                                    <a data-bs-toggle="collapse" href="#freeArea" aria-expanded="false"
-                                       aria-controls="freeArea">
-                                        <i class="fa fa-angle-up fa-lg"></i>
-                                    </a>
+                                    <div class="col-4 text-end">
+                                        <a data-bs-toggle="collapse" href="#freeArea" aria-expanded="false"
+                                        aria-controls="freeArea">
+                                            <i class="fa fa-angle-up fa-lg"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="collapse show ec-cardCollapse" id="freeArea">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <span>{{ 'admin.product.free_area'|trans }}</span>
-                                    </div>
-                                    <div class="col-9">
-                                        <div>
-                                            {{ form_widget(form.free_area, {id: 'wysiwyg-area', attr : { rows : "8"} }) }}
-                                            {{ form_errors(form.free_area) }}
+                            <div class="collapse show ec-cardCollapse" id="freeArea">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <span>{{ 'admin.product.free_area'|trans }}</span>
+                                        </div>
+                                        <div class="col-9">
+                                            <div>
+                                                {{ form_widget(form.free_area, {id: 'wysiwyg-area', attr : { rows : "8"} }) }}
+                                                {{ form_errors(form.free_area) }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                    </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="c-contentsArea__secondaryCol">
@@ -711,208 +754,210 @@ file that was distributed with this source code.
                             </div>
                         </div>
                     {% endif %}
-                    <div class="card rounded border-0 mb-4">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-8">
-                                    <div class="d-inline-block">
-                                        <span class="card-title">{{ 'admin.product.category__product_card_title'|trans }}</span>
+                    {% if not is_warehouse %}
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="d-inline-block">
+                                            <span class="card-title">{{ 'admin.product.category__product_card_title'|trans }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <a data-bs-toggle="collapse" href="#category" aria-expanded="false"
+                                        aria-controls="category">
+                                            <i class="fa fa-angle-up fa-lg"></i>
+                                        </a>
                                     </div>
                                 </div>
-                                <div class="col-4 text-end">
-                                    <a data-bs-toggle="collapse" href="#category" aria-expanded="false"
-                                       aria-controls="category">
-                                        <i class="fa fa-angle-up fa-lg"></i>
-                                    </a>
-                                </div>
                             </div>
-                        </div>
-                        <div class="collapse show ec-cardCollapse" id="category">
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="input-group">
-                                                <div class="input-group-text">
-                                                    <span id="basic-addon1">
-                                                            <i class="fa fa-search"></i>
-                                                    </span>
+                            <div class="collapse show ec-cardCollapse" id="category">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="input-group">
+                                                    <div class="input-group-text">
+                                                        <span id="basic-addon1">
+                                                                <i class="fa fa-search"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input id="search-category" class="form-control" type="search"
+                                                        placeholder="{{ 'admin.product.search_category'|trans }}"
+                                                        aria-label="Search">
                                                 </div>
-                                                <input id="search-category" class="form-control" type="search"
-                                                       placeholder="{{ 'admin.product.search_category'|trans }}"
-                                                       aria-label="Search">
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {% macro tree(ChoicedIds, Category, form) %}
-                                    {% import _self as selfMacro %}
-                                    <li class="c-directoryTree--registerItem category-li">
-                                        <input type="checkbox" id="admin_product_category_{{ Category.id }}" name="admin_product[Category][]" value="{{ Category.id }}" {% if Category.id in ChoicedIds %}checked{% endif %}>
-                                        <label for="admin_product_category_{{ Category.id }}">{{ Category.name }}</label>
-                                        <ul class="list-unstyled">
-                                            {% for child,ChildCategory in Category.children %}
-                                                {{ selfMacro.tree(ChoicedIds, ChildCategory, form) }}
-                                            {% endfor %}
-                                        </ul>
-                                    </li>
-                                {% endmacro %}
+                                    {% macro tree(ChoicedIds, Category, form) %}
+                                        {% import _self as selfMacro %}
+                                        <li class="c-directoryTree--registerItem category-li">
+                                            <input type="checkbox" id="admin_product_category_{{ Category.id }}" name="admin_product[Category][]" value="{{ Category.id }}" {% if Category.id in ChoicedIds %}checked{% endif %}>
+                                            <label for="admin_product_category_{{ Category.id }}">{{ Category.name }}</label>
+                                            <ul class="list-unstyled">
+                                                {% for child,ChildCategory in Category.children %}
+                                                    {{ selfMacro.tree(ChoicedIds, ChildCategory, form) }}
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    {% endmacro %}
 
-                                <div class="c-directoryTree--register rounded border mb-3 p-3">
-                                    {% import _self as renderMacro %}
-                                    {% for TopCategory in TopCategories %}
-                                        <ul class="list-unstyled">
-                                            {{ renderMacro.tree(ChoicedCategoryIds, TopCategory, form.Category) }}
-                                        </ul>
-                                    {% endfor %}
-                                    {{ form_errors(form.Category) }}
-                                </div>
-                                <div class="d-block text-center">
-                                    <a class="btn w-100 btn-ec-regular"
-                                       data-action="confirm"
-                                       href="{{ path('admin_product_category') }}"
-                                       title="{{ 'admin.common.move_to_confirm_message'|trans({
-                                           '%name%' : 'admin.product.category_management'|trans}) }}">{{ 'admin.product.move_to_category'|trans }}</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card rounded border-0 mb-4">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-8">
-                                    <div class="d-inline-block">
-                                        <span class="card-title">
-                                            {{ 'admin.product.tag__product_card_title'|trans }}
-                                        </span>
+                                    <div class="c-directoryTree--register rounded border mb-3 p-3">
+                                        {% import _self as renderMacro %}
+                                        {% for TopCategory in TopCategories %}
+                                            <ul class="list-unstyled">
+                                                {{ renderMacro.tree(ChoicedCategoryIds, TopCategory, form.Category) }}
+                                            </ul>
+                                        {% endfor %}
+                                        {{ form_errors(form.Category) }}
+                                    </div>
+                                    <div class="d-block text-center">
+                                        <a class="btn w-100 btn-ec-regular"
+                                        data-action="confirm"
+                                        href="{{ path('admin_product_category') }}"
+                                        title="{{ 'admin.common.move_to_confirm_message'|trans({
+                                            '%name%' : 'admin.product.category_management'|trans}) }}">{{ 'admin.product.move_to_category'|trans }}</a>
                                     </div>
                                 </div>
-                                <div class="col-4 text-end">
-                                    <a data-bs-toggle="collapse" href="#tag" aria-expanded="false" aria-controls="tag">
-                                        <i class="fa fa-angle-up fa-lg"></i>
-                                    </a>
-                                </div>
                             </div>
                         </div>
-
-                        <div class="collapse show ec-cardCollapse" id="tag">
-                            <div class="card-body">
-                                {% if(Tags|length > 0) %}
-                                    {% for Tag in Tags %}
-                                        <div class="d-inline-block mb-2 me-2">
-                                            <button class="btn btn-outline-primary" type="button">{{ Tag.name }}</button>
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="d-inline-block">
+                                            <span class="card-title">
+                                                {{ 'admin.product.tag__product_card_title'|trans }}
+                                            </span>
                                         </div>
-                                    {% endfor %}
-                                {% endif %}
-
-                                <div class="d-block mb-3" data-bs-toggle="collapse" href="#allTags" role="button"
-                                     aria-expanded="false" aria-controls="allTags">
-                                    <a>
-                                        <i class="fa fa-plus-square-o fw-bold me-1"></i>
-                                        <span class="fw-bold">{{ 'admin.product.save_tag'|trans }}</span>
-                                    </a>
-                                </div>
-                                <div class="collapse p-3 bg-ec-lightGray mb-3 ec-collapse" id="allTags">
-                                    <div class="d-none">
-                                        {{ form_widget(form.Tag) }}
                                     </div>
-                                    {% if(TagsList|length > 0) %}
-                                        {% for Tag in TagsList %}
+                                    <div class="col-4 text-end">
+                                        <a data-bs-toggle="collapse" href="#tag" aria-expanded="false" aria-controls="tag">
+                                            <i class="fa fa-angle-up fa-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="collapse show ec-cardCollapse" id="tag">
+                                <div class="card-body">
+                                    {% if(Tags|length > 0) %}
+                                        {% for Tag in Tags %}
                                             <div class="d-inline-block mb-2 me-2">
-                                                <button class="btn btn-outline-secondary" type="button"
-                                                        data-tag-id="{{ Tag.id }}">{{ Tag.name }}</button>
+                                                <button class="btn btn-outline-primary" type="button">{{ Tag.name }}</button>
                                             </div>
                                         {% endfor %}
                                     {% endif %}
 
                                     <div class="d-block mb-3" data-bs-toggle="collapse" href="#allTags" role="button"
-                                         aria-expanded="false" aria-controls="allTags"></div>
-                                </div>
+                                        aria-expanded="false" aria-controls="allTags">
+                                        <a>
+                                            <i class="fa fa-plus-square-o fw-bold me-1"></i>
+                                            <span class="fw-bold">{{ 'admin.product.save_tag'|trans }}</span>
+                                        </a>
+                                    </div>
+                                    <div class="collapse p-3 bg-ec-lightGray mb-3 ec-collapse" id="allTags">
+                                        <div class="d-none">
+                                            {{ form_widget(form.Tag) }}
+                                        </div>
+                                        {% if(TagsList|length > 0) %}
+                                            {% for Tag in TagsList %}
+                                                <div class="d-inline-block mb-2 me-2">
+                                                    <button class="btn btn-outline-secondary" type="button"
+                                                            data-tag-id="{{ Tag.id }}">{{ Tag.name }}</button>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
 
-                                <div class="d-block text-center">
-                                    <a href="{{ path('admin_product_tag') }}"
-                                       class="btn w-100 btn-ec-regular"
-                                       data-action="confirm"
-                                       title="{{ 'admin.common.move_to_confirm_message'|trans({
-                                           '%name%' : 'admin.product.tag_management'|trans }) }}">{{ 'admin.product.move_to_tag'|trans }}</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card rounded border-0 mb-4">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-8">
-                                    <span class="card-title">{{ 'admin.product.create_date__card_title'|trans }}</span>
-                                </div>
-                                <div class="col-4 text-end">
-                                    <a data-bs-toggle="collapse" href="#update" aria-expanded="false"
-                                       aria-controls="update">
-                                        <i class="fa fa-angle-up fa-lg"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="collapse show ec-cardCollapse" id="update">
-                            <div class="card-body">
-                                <div class="row mb-2">
-                                    <div class="col">
-                                        <i class="fa fa-flag me-1"></i>
-                                        <span>{{ 'admin.common.create_date'|trans }}</span>
+                                        <div class="d-block mb-3" data-bs-toggle="collapse" href="#allTags" role="button"
+                                            aria-expanded="false" aria-controls="allTags"></div>
                                     </div>
-                                    <div class="col">
-                                        <span>：{{ Product.create_date|date_min }}</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col">
-                                        <i class="fa fa-refresh me-1"></i>
-                                        <span>{{ 'admin.common.update_date'|trans }}</span>
-                                    </div>
-                                    <div class="col">
-                                        <span>：{{ Product.update_date|date_min }}</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col">
-                                        <i class="fa fa-user me-1"></i>
-                                        <span>{{ 'admin.common.last_updater'|trans }}</span>
-                                    </div>
-                                    <div class="col">
-                                        <span>：{{ Product.Creator ? Product.Creator.name }}</span>
+
+                                    <div class="d-block text-center">
+                                        <a href="{{ path('admin_product_tag') }}"
+                                        class="btn w-100 btn-ec-regular"
+                                        data-action="confirm"
+                                        title="{{ 'admin.common.move_to_confirm_message'|trans({
+                                            '%name%' : 'admin.product.tag_management'|trans }) }}">{{ 'admin.product.move_to_tag'|trans }}</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card rounded border-0 mb-4">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-8">
-                                    <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
-                                         title="{{ 'tooltip.product.shop_memo'|trans }}">
-                                        <span class="card-title">
-                                            {{ 'admin.common.shop_memo'|trans }}
-                                            <i class="fa fa-question-circle fa-lg ms-1"></i>
-                                        </span>
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <span class="card-title">{{ 'admin.product.create_date__card_title'|trans }}</span>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <a data-bs-toggle="collapse" href="#update" aria-expanded="false"
+                                        aria-controls="update">
+                                            <i class="fa fa-angle-up fa-lg"></i>
+                                        </a>
                                     </div>
                                 </div>
-                                <div class="col-4 text-end">
-                                    <a data-bs-toggle="collapse" href="#shopMemo" aria-expanded="false"
-                                       aria-controls="shopMemo">
-                                        <i class="fa fa-angle-up fa-lg"></i>
-                                    </a>
+                            </div>
+                            <div class="collapse show ec-cardCollapse" id="update">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col">
+                                            <i class="fa fa-flag me-1"></i>
+                                            <span>{{ 'admin.common.create_date'|trans }}</span>
+                                        </div>
+                                        <div class="col">
+                                            <span>：{{ Product.create_date|date_min }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col">
+                                            <i class="fa fa-refresh me-1"></i>
+                                            <span>{{ 'admin.common.update_date'|trans }}</span>
+                                        </div>
+                                        <div class="col">
+                                            <span>：{{ Product.update_date|date_min }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col">
+                                            <i class="fa fa-user me-1"></i>
+                                            <span>{{ 'admin.common.last_updater'|trans }}</span>
+                                        </div>
+                                        <div class="col">
+                                            <span>：{{ Product.Creator ? Product.Creator.name }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="collapse show ec-cardCollapse" id="shopMemo">
-                            <div class="card-body">
-                                {{ form_widget(form.note, { attr : { rows : "8"} }) }}
-                                {{ form_errors(form.note) }}
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="{{ 'tooltip.product.shop_memo'|trans }}">
+                                            <span class="card-title">
+                                                {{ 'admin.common.shop_memo'|trans }}
+                                                <i class="fa fa-question-circle fa-lg ms-1"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <a data-bs-toggle="collapse" href="#shopMemo" aria-expanded="false"
+                                        aria-controls="shopMemo">
+                                            <i class="fa fa-angle-up fa-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="collapse show ec-cardCollapse" id="shopMemo">
+                                <div class="card-body">
+                                    {{ form_widget(form.note, { attr : { rows : "8"} }) }}
+                                    {{ form_errors(form.note) }}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
