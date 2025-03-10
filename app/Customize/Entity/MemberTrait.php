@@ -24,7 +24,7 @@ trait MemberTrait
     /**
      * @return bool|null
      */
-    public function getIsWarehouse(): ?bool
+    public function getIsWarehouse()
     {
         return $this->is_warehouse;
     }

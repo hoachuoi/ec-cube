@@ -12,7 +12,7 @@ use Eccube\Security\Voter\AuthorityVoter as BaseAuthorityVoter;
 
 class AuthorityVoter extends BaseAuthorityVoter
 {
-        /**
+    /**
      * @var AuthorityRoleRepository
      */
     protected $authorityRoleRepository;
@@ -50,14 +50,10 @@ class AuthorityVoter extends BaseAuthorityVoter
             $path = rawurldecode($request->getPathInfo());
         }
 
-        $user = $token->getUser();
-
-        if($user) {
-            if ($this->checkWarehouseAccess($user, $path)) {
-                return VoterInterface::ACCESS_GRANTED;
-            } else {
-                return VoterInterface::ACCESS_DENIED;
-            }
+        $warehouse = $token->getUser();
+        
+        if ($warehouse && method_exists($warehouse, 'getIsWarehouse') && $warehouse->getIsWarehouse()) {
+            return $this->checkWarehouseAccess($path) ? VoterInterface::ACCESS_GRANTED : VoterInterface::ACCESS_DENIED;
         }
 
         $Member = $token->getUser();
@@ -90,16 +86,11 @@ class AuthorityVoter extends BaseAuthorityVoter
     /**
      * Kiểm tra quyền truy cập của user warehouse
      */
-    private function checkWarehouseAccess($user, $path)
-    {    
-        if ($user->getIsWarehouse()) {
-            if (strpos($path, '/manager/product') === 0) {
-                return true;
-            }
-            return false;
+    private function checkWarehouseAccess( $path )
+    {
+        if (strpos($path, '/manager/product') === 0) {
+            return true;
         }
-    
         return false;
     }
-    
 }

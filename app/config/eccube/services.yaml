@@ -126,6 +126,13 @@ services:
         class: Eccube\Security\Http\Authentication\EccubeLogoutSuccessHandler
         arguments:
           - '@Eccube\Request\Context'
+    # Customize\Repository\ProductRepository:
+    #     arguments:
+    #         $registry: '@doctrine'
+    #         $queries: '@Eccube\Doctrine\Query\Queries'
+    #         $eccubeConfig: '@Eccube\Common\EccubeConfig'
+    Eccube\Repository\ProductRepository:
+        class: Customize\Repository\ProductRepository
 
     # Autowiring can't guess the constructor arguments that are not type-hinted with
     # classes (e.g. container parameters) so you must define those arguments explicitly
