@@ -366,7 +366,8 @@ file that was distributed with this source code.
                                     <div class="col">
                                         {% if not is_warehouse %}
                                             {{ form_widget(form.is_warehouse) }}
-                                            {{ form_errors(form.is_warehouse) }}
+                                        {% else %}
+                                            <input type="hidden" name="{{ form.is_warehouse.vars.full_name }}" value="{{ form.is_warehouse.vars.value }}">
                                         {% endif %}
                                     </div>
                                 </div>
@@ -380,7 +381,7 @@ file that was distributed with this source code.
                                     </div>
                                     <div class="col">
                                     {% if is_warehouse %}
-                                        {{ form_widget(form.description_detail, { attr : { rows : "8"}, 'disabled':'disabled' }) }}
+                                        {{ form_widget(form.description_detail, { attr : { rows : "8"}, 'readonly':'readonly' }) }}
                                     {% else %}
                                         {{ form_widget(form.description_detail, { attr : { rows : "8"} }) }}
                                     {% endif %}
@@ -408,7 +409,7 @@ file that was distributed with this source code.
                                         <div class="col mb-4">
                                             <div>
                                             {% if is_warehouse %}
-                                                {{ form_widget(form.description_list, { attr : { rows : "4"}, 'disabled': 'disabled' }) }}
+                                                {{ form_widget(form.description_list, { attr : { rows : "4"}, 'readonly': 'readonly' }) }}
                                             {% else %}
                                                 {{ form_widget(form.description_list, { attr : { rows : "4"} }) }}
                                             {% endif %}

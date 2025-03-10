@@ -548,6 +548,7 @@ class ProductController extends BaseProductController
         $ChoicedCategoryIds = array_map(function ($Category) {
             return $Category->getId();
         }, $form->get('Category')->getData());
+
         // Lấy thông tin người dùng từ token
         $token = $this->security->getToken();
         $user = $token ? $token->getUser() : null;
