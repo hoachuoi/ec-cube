@@ -1,0 +1,6 @@
+plugin_holiday.admin.name: 名前
+plugin_holiday.admin.message: メッセージ
+plugin_holiday.admin.date: 日付
+plugin_holiday.admin.require: 必須
+plugin_holiday.admin.search_holiday: 祝日検索
+plugin_holiday.admin.config: 設定

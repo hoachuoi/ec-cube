@@ -1,0 +1,9 @@
+{% if is_holiday %}
+    {% block holiday_message %}
+        <div class="container bg-danger text-white">
+                <h1 class="text-warning text-center"> Holiday!!!!!</h1>
+                <h3  class="text-warning text-center"> Hôm nay là: {{ holiday_name }}</h3>
+                <p  class="text-primary text-center h4"> {{ holiday_message }}</p>
+        </div>
+    {% endblock %}
+{% endif  %}

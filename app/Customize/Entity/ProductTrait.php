@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Customize\Entity;
 
@@ -13,8 +13,29 @@ use Eccube\Annotation\EntityExtension;
 trait ProductTrait
 {
     /**
-     * @ORM\Column(type="string", nullable=true)
+     *  @ORM\Column(type="integer", nullable=true)
+     * @var 
      */
-    // thêm một cột mới vào bảng product trong database có thể có giá trị null
-   public $maker_name;
+    private $id_warehouse;
+
+    public function __construct()
+    {
+        $this->id_warehouse = null;
+    }
+    /**
+     * @return int|null
+     */
+    public function getIdWarehouse(): ?int
+    {
+        return $this->id_warehouse;
+    }
+
+    /**
+     * @param int|null $idWarehouse
+     */
+    public function setIdWarehouse(?int $idWarehouse): self
+    {
+        $this->id_warehouse = $idWarehouse;
+        return $this;
+    }
 }

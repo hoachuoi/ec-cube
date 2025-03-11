@@ -6,11 +6,14 @@ use Eccube\Controller\AbstractController;
 use Plugin\PluginHoliday\Entity\Holiday;
 use Plugin\PluginHoliday\Form\Type\Admin\ConfigType;
 use Plugin\PluginHoliday\Form\Type\Admin\HolidayType;
+use Plugin\PluginHoliday\Form\Type\Admin\SearchHolidayType;
 use Plugin\PluginHoliday\Repository\ConfigRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Plugin\PluginHoliday\Repository\HolidayRepository;
+use Knp\Component\Pager\PaginatorInterface;
+
 
 class ConfigController extends AbstractController
 {
@@ -81,11 +84,9 @@ class ConfigController extends AbstractController
         $form = $this->createForm(HolidayType::class, $Holiday);
         $form->handleRequest($request);
 
-        // Xử lý khi form được submit và hợp lệ
         if ($form->isSubmitted() && $form->isValid()) {
             $Holiday = $form->getData();
 
-            // Gán năm mặc định cho holiday_date (vì form chỉ nhận ngày/tháng)
             $date = $form->get('holiday_date')->getData();
             if ($date instanceof \DateTime) {
                 $currentYear = (new \DateTime())->format('Y');
@@ -96,7 +97,6 @@ class ConfigController extends AbstractController
             $this->entityManager->persist($Holiday);
             $this->entityManager->flush();
 
-            // Thông báo dựa trên hành động (tạo mới hay cập nhật)
             $message = $id ? '日祝を更新しました。' : '日祝を登録しました。';
             $this->addSuccess($message, 'admin');
 
@@ -105,7 +105,137 @@ class ConfigController extends AbstractController
 
         return [
             'form' => $form->createView(),
-            'holiday' => $Holiday, // Truyền thêm đối tượng Holiday để phân biệt tạo mới hay chỉnh sửa
+            'holiday' => $Holiday,
         ];
+    }
+
+    /**
+     * Danh sách ngày lễ với tìm kiếm và phân trang
+     * @Route("/%eccube_admin_route%/plugin_holiday/list", name="plugin_holiday_admin_list")
+     * @Route("/%eccube_admin_route%/plugin_holiday/list/page/{page_no}", requirements={"page_no" = "\d+"}, name="plugin_holiday_admin_list_page")
+     * @Template("@PluginHoliday/admin/holiday_list.twig")
+     */
+    public function listHoliday(Request $request, PaginatorInterface $paginator, $page_no = null)
+    {
+        $session = $this->session;
+        $builder = $this->formFactory->createBuilder(SearchHolidayType::class);
+        $searchForm = $builder->getForm();
+
+        $pageMaxis = $this->entityManager->getRepository('Eccube\Entity\Master\PageMax')->findAll();
+        $pageCount = $session->get('plugin_holiday.admin.search.page_count', $this->eccubeConfig['eccube_default_page_count']);
+        $pageCountParam = $request->get('page_count');
+        if ($pageCountParam && is_numeric($pageCountParam)) {
+            foreach ($pageMaxis as $pageMax) {
+                if ($pageCountParam == $pageMax->getName()) {
+                    $pageCount = $pageMax->getName();
+                    $session->set('plugin_holiday.admin.search.page_count', $pageCount);
+                    break;
+                }
+            }
+        }
+
+        if ('POST' === $request->getMethod()) {
+            $searchForm->handleRequest($request);
+            if ($searchForm->isValid()) {
+                $searchData = $searchForm->getData();
+
+                if(!is_array($searchData)) {
+                    $searchData = [
+                        'name' => $searchData->getName(),
+                        'holiday_message' => $searchData->getHolidayMessage(),
+                        'holiday_date' => $searchData->getHolidayDate(),
+                    ];
+                }
+                $page_no = 1;
+
+                $session->set('plugin_holiday.admin.search', $searchForm->getData());
+                $session->set('plugin_holiday.admin.search.page_no', $page_no);
+            } else {
+                return [
+                    'searchForm' => $searchForm->createView(),
+                    'pagination' => [],
+                    'pageMaxis' => $pageMaxis,
+                    'page_no' => $page_no,
+                    'page_count' => $pageCount,
+                    'has_errors' => true,
+                ];
+            }
+        } else {
+            if (null !== $page_no || $request->get('resume')) {
+                if ($page_no) {
+                    $session->set('plugin_holiday.admin.search.page_no', (int) $page_no);
+                } else {
+                    $page_no = $session->get('plugin_holiday.admin.search.page_no', 1);
+                }
+                $viewData = $session->get('plugin_holiday.admin.search', []);
+            } else {
+                $page_no = 1;
+                $viewData = [];
+                $session->set('plugin_holiday.admin.search', $viewData);
+                $session->set('plugin_holiday.admin.search.page_no', $page_no);
+            }
+            $searchData = $viewData;
+            $searchForm->submit($searchData);
+        }
+
+        $qb = $this->holidayRepository->getQueryBuilderBySearchData($searchData);
+
+        $pagination = $paginator->paginate(
+            $qb->getQuery(),
+            $page_no,
+            $pageCount
+        );
+
+        return [
+            'searchForm' => $searchForm->createView(),
+            'pagination' => $pagination,
+            'pageMaxis' => $pageMaxis,
+            'page_no' => $page_no,
+            'page_count' => $pageCount,
+            'has_errors' => false,
+        ];
+    }
+    /**
+     * controller xóa ngày lễ
+     * @Route("/%eccube_admin_route%/plugin_holiday/{id}/delete_holiday", name="plugin_holiday_admin_delete_holiday", requirements={"id" = "\d+"})
+     */
+    public function deleteHoliday(Request $request, $id)
+    {
+        $Holiday = $this->holidayRepository->find($id);
+        if (!$Holiday) {
+            throw $this->createNotFoundException('Ngày lễ không tồn tại.');
+        }
+
+        $this->entityManager->remove($Holiday);
+        $this->entityManager->flush();
+
+        $this->addSuccess('日祝を削除しました。', 'admin');
+
+        return $this->redirectToRoute('plugin_holiday_admin_list');
+    }
+    /** 
+     * Controller cho block holiday_message
+     * @Route("/block_holiday_message", name="block_holiday_message")
+     * @Template("@PluginHoliday/default/holiday_message.twig")
+     */
+    public function holidayMessageBlock()
+    {
+        $today = new \DateTime();
+
+        $holiday = $this->holidayRepository->findOneBy(['holiday_date' => $today]);
+
+        $holidayName = null;
+        $holidayMessage = null;
+
+        if ($holiday) {
+            $holidayName = $holiday->getName();
+            $holidayMessage = $holiday->getHolidayMessage();
+        }
+
+        return [
+            'is_holiday' => !is_null($holiday), 
+            'holiday_message' => $holidayMessage, 
+            'holiday_name' => $holidayName 
+        ]; 
     }
 }
