@@ -49,11 +49,12 @@ class AuthorityVoter extends BaseAuthorityVoter
         if (is_object($request)) {
             $path = rawurldecode($request->getPathInfo());
         }
+        $routeName = $request->attributes->get('_route');
 
         $warehouse = $token->getUser();
 
         if ($warehouse && method_exists($warehouse, 'getIsWarehouse') && $warehouse->getIsWarehouse()) {
-            return $this->checkWarehouseAccess($path) ? VoterInterface::ACCESS_GRANTED : VoterInterface::ACCESS_DENIED;
+            return $this->checkWarehouseAccess($routeName) ? VoterInterface::ACCESS_GRANTED : VoterInterface::ACCESS_DENIED;
         }
 
         $Member = $token->getUser();
@@ -86,20 +87,15 @@ class AuthorityVoter extends BaseAuthorityVoter
     /**
      * Kiểm tra quyền truy cập của user warehouse
      */
-    private function checkWarehouseAccess($path)
+    private function checkWarehouseAccess($routeName)
     {
-        switch (true) {
-            case ($path === '/manager/product'):
-                return true;
-
-            case preg_match('#^/manager/product/product/\d+/edit$#', $path):
-                return true;
-            
-            case preg_match('#^/manager/product/product/image/load(\?.*)?$#', $path):
-                return true;
-
-            default:
-                return false;
-        }
+       switch($routeName){
+        case  "admin_product":
+        case  "admin_product_product_edit":
+        case "admin_product_image_load":
+            return true;
+        default:
+            return false;
+       }
     }
 }

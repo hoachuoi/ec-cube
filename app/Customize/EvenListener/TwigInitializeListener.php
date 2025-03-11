@@ -104,17 +104,20 @@ class TwigInitializeListener extends BaseTwigInitializeListener
      */
     public function __construct(
         Environment $twig,
-        PageLayoutRepository $pageLayoutRepository,
         BaseInfoRepository $baseInfoRepository,
+        PageRepository $pageRepository,
+        PageLayoutRepository $pageLayoutRepository,
         BlockPositionRepository $blockPositionRepository,
         DeviceTypeRepository $deviceTypeRepository,
         AuthorityRoleRepository $authorityRoleRepository,
         EccubeConfig $eccubeConfig,
         Context $context,
+        MobileDetect $mobileDetector,
         UrlGeneratorInterface $router,
         LayoutRepository $layoutRepository,
         SystemService $systemService
     ) {
+        parent::__construct($twig, $baseInfoRepository, $pageRepository, $pageLayoutRepository, $blockPositionRepository, $deviceTypeRepository, $authorityRoleRepository, $eccubeConfig, $context, $mobileDetector, $router, $layoutRepository, $systemService);
         $this->twig = $twig;
         $this->pageLayoutRepository = $pageLayoutRepository;
         $this->baseInfoRepository = $baseInfoRepository;
@@ -130,6 +133,7 @@ class TwigInitializeListener extends BaseTwigInitializeListener
     public function setAdminGlobals(RequestEvent $event)
     {
         // メニュー表示用配列.
+        parent::setAdminGlobals($event);
         $menus = [];
         $this->twig->addGlobal('menus', $menus);
 

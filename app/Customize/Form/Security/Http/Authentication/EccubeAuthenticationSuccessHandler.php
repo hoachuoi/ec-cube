@@ -1,6 +1,6 @@
 <?php
 
-namespace Customize\Form\Security\Http\Authenticaction;
+namespace Customize\Form\Security\Http\Authentication;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

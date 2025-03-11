@@ -343,7 +343,11 @@ file that was distributed with this source code.
                                     <div class="col mb-2">
                                         <p id="message"></p>
                                         <div id="upload-zone" class="rounded">
+                                        {% if is_warehouse %}
                                             {{ form_widget(form.product_image, { attr : { style : 'display:none;' } ,'disabled': 'disabled'}) }}
+                                        {% else %}
+                                            {{ form_widget(form.product_image, { attr : { style : 'display:none;' } }) }}
+                                        {% endif %}
                                             {{ form_errors(form.product_image) }}
                                         </div><!-- /#upload-zone -->
                                         <span class="invalid-feedback" id="product_image_error" style="display: none">
@@ -354,23 +358,28 @@ file that was distributed with this source code.
                                         </span>
                                     </div>
                                 </div>
-                                 {# add fill warehouse #}
-                                <div class="row">
-                                    <div class="col-3">
-                                        <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"
-                                             title="{{ 'tooltip.product.warehouse'|trans }}">
-                                            <span>{{ 'admin.setting.system.member.warehouse'|trans }}</span>
-                                            <i class="fa fa-question-circle fa-lg ms-1"></i>
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'tooltip.product.sale_type'|trans }}">
+                                                <span>{{ 'admin.setting.system.member.warehouse'|trans }}</span>
+                                                <i class="fa fa-question-circle fa-lg ms-1"></i>
+                                                <span class="badge bg-primary ms-1">
+                                                    {{ 'admin.common.required'|trans }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                                {# {{ form_widget(form.id_warehouse) }} #}
+                                        <div class="col mb-2">
+                                        {% if is_warehouse %}
+                                        {{ form.id_warehouse.vars.data }}
+                                        {{ form_widget(form.id_warehouse, { type :'hidden' }) }}
+                                        {% else %}
+                                            {{ form_widget(form.id_warehouse) }}
+                                        {% endif %}
+                                            {{ form_errors(form.id_warehouse) }}
                                         </div>
                                     </div>
-                                    <div class="col">
-                                        {% if not is_warehouse %}
-                                            {{ form_widget(form.is_warehouse) }}
-                                        {% else %}
-                                            <input type="hidden" name="{{ form.is_warehouse.vars.full_name }}" value="{{ form.is_warehouse.vars.value }}">
-                                        {% endif %}
-                                    </div>
-                                </div>
+
                                 <div class="row">
                                     <div class="col-3">
                                         <div class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top"

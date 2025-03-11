@@ -58,7 +58,7 @@ class ProductRepository extends BaseProductRepository
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getQueryBuilderBySearchDataForAdmin($searchData, $isWarehouse = false)
+    public function getQueryBuilderBySearchDataForAdmin($searchData, $idWarehouse = null)
     {
         $qb = $this->createQueryBuilder('p')
             ->addSelect('pc', 'pi', 'tr', 'ps')
@@ -68,8 +68,8 @@ class ProductRepository extends BaseProductRepository
             ->leftJoin('pc.ProductStock', 'ps')
             ->andWhere('pc.visible = :visible')
             ->setParameter('visible', true);
-        if ($isWarehouse) {
-            $qb->andWhere('p.is_warehouse = :isWarehouse')->setParameter('isWarehouse', 1);
+        if ($idWarehouse != null) {
+            $qb->andWhere('p.id_warehouse = :idWarehouse')->setParameter('idWarehouse', $idWarehouse);
 
         }
         // id

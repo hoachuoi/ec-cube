@@ -13,29 +13,29 @@ use Eccube\Annotation\EntityExtension;
 trait ProductTrait
 {
     /**
-     * @ORM\Column(type="boolean", nullable=true)
+     *  @ORM\Column(type="integer", nullable=true)
+     * @var 
      */
-    private $is_warehouse;
+    private $id_warehouse;
 
     public function __construct()
     {
-        $this->is_warehouse = false;
+        $this->id_warehouse = null;
+    }
+    /**
+     * @return int|null
+     */
+    public function getIdWarehouse(): ?int
+    {
+        return $this->id_warehouse;
     }
 
     /**
-     * @return bool|null
+     * @param int|null $idWarehouse
      */
-    public function getIsWarehouse(): ?bool
+    public function setIdWarehouse(?int $idWarehouse): self
     {
-        return $this->is_warehouse;
-    }
-
-    /**
-     * @param bool|null $isWarehouse
-     */
-    public function setIsWarehouse(?bool $isWarehouse): self
-    {
-        $this->is_warehouse = $isWarehouse;
+        $this->id_warehouse = $idWarehouse;
         return $this;
     }
 }

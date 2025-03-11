@@ -190,13 +190,13 @@ class ProductController extends BaseProductController
         $token = $this->security->getToken();
         $user = $token ? $token->getUser() : null;
 
-        $isWarehouse = false;
+        $idWarehouse = null;
         if ($user && method_exists($user, 'getIsWarehouse') && $user->getIsWarehouse()) {
-            $isWarehouse = true;
+            $idWarehouse = $user->getId();
         }
 
         // Gọi repository và truyền giá trị $isWarehouse vào
-        $qb = $this->productRepository->getQueryBuilderBySearchDataForAdmin($searchData, $isWarehouse);
+        $qb = $this->productRepository->getQueryBuilderBySearchDataForAdmin($searchData, $idWarehouse);
         // $qb = $this->productRepository->getQueryBuilderBySearchDataForAdmin($searchData);
 
         $event = new EventArgs(
@@ -258,7 +258,15 @@ class ProductController extends BaseProductController
             $ProductClass->setProductStock($ProductStock);
             $ProductStock->setProductClass($ProductClass);
         } else {
+            $user = $this->security->getUser(); 
             $Product = $this->productRepository->findWithSortedClassCategories($id);
+
+            if($user->getIsWarehouse()){
+                if($Product->getIdWarehouse() != $user->getId()){
+                    return $this->redirectToRoute('admin_product');
+                }
+            }
+            
             $ProductClass = null;
             $ProductStock = null;
             if (!$Product) {
