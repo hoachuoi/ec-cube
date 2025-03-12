@@ -10,7 +10,7 @@ node_modules
 !/app/Plugin/.gitkeep
 /app/PluginData/*
 !/app/PluginData/.gitkeep
-/app/template/*
+# /app/template/*
 !/app/template/admin
 !/app/template/default
 !/app/template/user_data
@@ -24,7 +24,7 @@ node_modules
 !/html/upload/save_image/no_image_product.png
 /html/upload/temp_image/*
 !/html/upload/temp_image/.gitkeep
-/html/template/*
+# html/template/*
 !/html/template/admin
 !/html/template/default
 !/html/template/install
